@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+<!-- Load the custom filter here -->
+
+{% block title %}Evidence List{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="dashboard-heading">Evidence and Malware Analysis</h2>
+
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <ul class="list-group">
+        {% for item in evidence %}
+        <li class="list-group-item bg-secondary text-light mb-3 rounded">
+          <h5 class="card-title text-warning">Evidence {{ item.id }} - {{ item.file.name }}</h5>
+          <p><strong>Uploaded on:</strong> {{ item.created_at }}</p>
+
+          <div class="card-body bg-dark text-light rounded p-3 mb-3">
+            {% for analysis in item.malwareanalysis_set.all %}
+            <p><strong>Analysis Result:</strong> {{ analysis.analysis_result }}</p>
+            <p><strong>Analyzed on:</strong> {{ analysis.created_at }}</p>
+            {% empty %}
+            <p>No analysis available for this evidence.</p>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'download_report' item.id %}" class="btn btn-custom">Download Report</a>
+
+            {% if item.file.name|endswith:".pcap" or item.file.name|endswith:".pcapng" %}
+            <a href="{% url 'analyze_pcap' item.id %}" class="btn btn-info">Analyze PCAP</a>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+  .dashboard-heading {
+    color: #ff7675;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+    font-size: 1.8rem;
+  }
+  .list-group-item {
+    background-color: #2a2a3e;
+    border-radius: 10px;
+    padding: 20px;
+    color: #ffffff;
+  }
+  .btn-custom {
+    background-color: #ff7675;
+    border: none;
+    color: #ffffff;
+  }
+  .btn-custom:hover {
+    background-color: #e74c3c;
+  }
+</style>
+
+{% endblock %}
